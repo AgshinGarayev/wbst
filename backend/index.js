@@ -2,23 +2,45 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const UserRoutes= require('./routes/UserRoutes')
-const QuoteRoutes= require('./routes/QuoteRoutes.js')
+const quoteModel = require('./models/Quote')
+
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 
 
-app.use((req,res,next)=>{
-    console.log(req.path, req.method)
-    next()
-})
 
+// GET method to fetch all quotes
+app.get('/quotes', async (req, res) => {
+  try {
+    const quotes = await quoteModel.find();
+    res.status(200).json(quotes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
+// POST method to create a new quote
+app.post('/quotes', async (req, res) => {
+  const { author, quote } = req.body;
 
-app.use("/api/users", UserRoutes)
-app.use("/api/quotes", QuoteRoutes)
+  if (!author || !quote) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const newQuote = new quoteModel({
+    author,
+    quote
+  });
+
+  try {
+    const savedQuote = await newQuote.save();
+    res.status(201).json(savedQuote);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 

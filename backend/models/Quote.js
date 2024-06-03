@@ -13,12 +13,6 @@ const quoteSchema = new mongoose.Schema({
         required: true
     },
 
-    user_id:{
-        type:String,
-        required: true
-
-    }
-
 })
 
 const quoteModel = mongoose.model('quote', quoteSchema)
